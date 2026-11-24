@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Streetlight Network Lab</title>
+  <link rel="stylesheet" href="/style.css"><script type="module" src="/app.js"></script>
+</head>
+<body>
+<header><div class="shell"><a class="brand" href="#"><i class="beacon"></i>Streetlight Network Lab</a><button class="quiet" id="screen">Full screen</button></div></header>
+<main class="shell">
+  <div class="intro">
+    <div><h1>What does a gateway save?</h1><p>Compare traffic from 20 streetlight locations around Sejong University, Seoul.</p></div>
+    <div class="night-strip"><canvas id="night" aria-hidden="true"></canvas></div>
+  </div>
+
+  <section class="workbench" aria-label="Transmission experiment">
+    <div class="toolbar">
+      <button id="paired" class="primary" disabled>Compare both routes</button>
+      <div class="single"><button id="standalone" disabled>Run individual</button><button id="aggregate" disabled>Run aggregated</button></div>
+      <details class="settings"><summary>Settings</summary><div class="settings-panel">
+        <label>Summary interval<select id="window"><option value="1">1 round</option><option value="2">2 rounds</option><option value="4" selected>4 rounds</option><option value="6">6 rounds</option><option value="12">12 rounds</option></select></label>
+        <label>Fault at round 9<select id="faultLamp"></select></label>
+      </div></details>
+    </div>
+
+    <div class="heading map-heading"><h2 id="flowTitle">Streetlight network</h2><span id="phase" role="status">Ready to run</span></div>
+    <div class="stage">
+      <div class="network-map">
+        <canvas id="streets" aria-hidden="true"></canvas>
+        <canvas id="movement" aria-label="Message paths from the streetlights to the server"></canvas>
+        <div id="lamps" aria-label="Select a streetlight"></div>
+      </div>
+      <aside class="receiver"><h3>Server payload</h3><p class="hint" id="scope"></p>
+        <div class="meter"><span>Individual</span><strong id="standaloneBytes">—</strong><div><i id="standaloneBar"></i></div></div>
+        <div class="meter gateway"><span>Aggregated</span><strong id="aggregateBytes">—</strong><div><i id="aggregateBar"></i></div></div>
+        <div class="ack"><span>Faults confirmed</span><b id="confirmed">—</b></div>
+      </aside>
+    </div>
+    <div class="legend" id="legend"></div>
+    <p class="map-credit">Sejong University area · Schematic roads · Simulated device status and traffic · <a href="https://www.data.go.kr/data/15070592/fileData.do" target="_blank" rel="noreferrer">Locations: Gwangjin-gu</a></p>
+    <p id="motionText">Choose a route to watch the reports travel.</p>
+    <p class="finding" id="saving" role="status" hidden></p>
+    <div class="scrub"><span>Round <strong id="step">0 / 12</strong></span><input id="seek" type="range" min="1" max="12" value="1" aria-label="View round" disabled><button id="replay" disabled>Replay round</button><button id="live" disabled>Latest round</button></div>
+  </section>
+
+  <section class="result-chart" aria-labelledby="chartHeading" hidden>
+    <div class="chart-heading"><h2 id="chartHeading">Cumulative server payload</h2>
+      <label>Show <select id="chartScope"><option value="both">Both routes</option><option value="standalone">Individual only</option><option value="aggregate">Aggregated only</option></select></label>
+    </div>
+    <div class="chart-key"><span class="individual-key">Individual</span><span class="aggregated-key">Aggregated</span></div>
+    <canvas id="payloadChart" role="img" aria-label="Cumulative server payload by round"></canvas>
+    <p class="hint" id="chartReadout"></p>
+  </section>
+
+  <div class="notes">
+    <details id="inspection"><summary>Streetlight details <span id="selectedId">SL-12</span></summary>
+      <div class="inspector"><div><div class="heading"><h3>Device status</h3><span id="protocol"></span></div><div id="device"></div><p class="hint" id="siteDetails"></p></div>
+        <div><h3>Status by round</h3><div id="history"></div><p class="hint" id="selectedReport"></p></div></div>
+    </details>
+    <details><summary>Measurements &amp; fault log</summary>
+      <div class="heading"><h3>Completed runs</h3><span class="hint" id="resultSettings"></span></div>
+      <div id="traffic"></div><p class="hint">Bytes include JSON and newlines. Headers and return ACKs are excluded.</p>
+      <div class="metrics" id="metrics"></div>
+      <h3>Fault log</h3><p class="hint" id="rule"></p><div id="events"></div>
+    </details>
+    <details><summary>About the experiment</summary>
+      <p>Individual lights send every report over TCP. In the aggregated route, lights send UDP reports to one gateway. It sends periodic TCP summaries and forwards faults immediately.</p>
+      <p>Each moving dot represents one received message, slowed for viewing. Amber marks a fault and a large green dot marks a summary.</p>
+      <h3>Exhibition inspiration</h3><p>At AIoT Korea 2026, the hyBee booth displayed 5.66 MB for individual LTE, 3.45 MB for gateway forwarding and 1.08 MB for its optimized configuration. This lab measures application payload on local sockets.</p>
+      <p class="hint">Source: Kim Si Hyung, AIoT Korea 2026 Exhibition Report, §4.</p>
+    </details>
+  </div>
+</main></body></html>
